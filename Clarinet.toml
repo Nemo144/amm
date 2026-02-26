@@ -9,7 +9,7 @@ cache_dir = './.cache'
 contract_id = 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard'
 [contracts.amm]
 path = 'contracts/amm.clar'
-clarity_version = 4
+clarity_version = 3
 epoch = 'latest'
 [repl.analysis]
 passes = [
