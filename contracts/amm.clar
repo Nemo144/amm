@@ -66,8 +66,30 @@
 ;;
 
 ;; read only functions
+;;compute the hash of token0 + token1 + fee to use as poolID
+(define-read-only (get-pool-id
+    (pool-info {token-0: <ft-trait>, token-1: <ft-trait>, fee: uint}))
+
+    (let (
+        (buff (unwrap-panic (to-consensus-buff? pool-info)));;convert the tuple => pool-info into a buffer(raw bytes)
+        (pool-id (hash160 buff));; take the hash of the raw bytes which becomes the pool-id
+        )
+        pool-id
+    )
+)
 ;;
 
 ;; private functions
+;;helper fnc to ensure that the token0 principal address is less than the token1 principal
+(define-private (correct-token-ordering (token-0 principal) (token-1 principal)) 
+    
+    (let (
+        (token-0-buff (unwrap-panic (to-consensus-buff? token-0)))
+        (token-1-buff (unwrap-panic (to-consensus-buff? token-1)))
+    )
+    (asserts! (< token-0-buff token-1-buff) (err u201))
+    (ok true)
+    )
+)
 ;;
 
