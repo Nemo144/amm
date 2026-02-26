@@ -63,6 +63,56 @@
 ;;
 
 ;; public functions
+;;define the create-pool function
+(define-public (create-pool (token-0 <ft-trait>) (token-1 <ft-trait>) (fee uint))
+
+    (let (
+        ;;create the pool info tuple
+        (pool-info {
+            token-0: token-0,
+            token-1: token-1,
+            fee: fee
+        })
+
+        ;;define the pool-id
+        (pool-id (get-pool-id pool-info))
+
+        ;;confirm that the pool does not already exist
+        (pool-does-not-exist (is-none (map-get? pools pool-id)))
+
+        ;;convert the ft-trait to principals
+        (token-0-principal (contract-of token-0))
+        (token-1-principal (contract-of token-1))
+
+        ;;create the pool data
+        (pool-data {
+            token-0: token-0-principal,
+            token-1: token-1-principal,
+            fee: (get fee pool-info),
+            liquidity: u0,;;initial value
+            balance-0: u0,;;initial value
+            balance-1: u0,;;initial value
+        })
+
+        )
+        
+        ;;check that the pool-id does not exist
+        (asserts! pool-does-not-exist (err u200))
+
+        ;;check that the token ordering is correct
+        (asserts! (is-ok (correct-token-ordering token-0-principal token-1-principal)) (err u201))
+
+        ;;update the pools mapping
+        (map-set pools pool-id pool-data)
+
+        ;;print the action and data
+        (print {action: "create-pool", data: pool-data})
+
+        ;;return ok
+        (ok true)
+    )
+
+)
 ;;
 
 ;; read only functions
