@@ -77,7 +77,7 @@
         ;;define the pool-id
         (pool-id (get-pool-id pool-info))
 
-        ;;confirm that the pool does not already exist
+        ;;confirm that the pool-id does not already exist
         (pool-does-not-exist (is-none (map-get? pools pool-id)))
 
         ;;convert the ft-trait to principals
@@ -96,7 +96,7 @@
 
         )
         
-        ;;check that the pool-id does not exist
+        ;;check that the pool does not exist
         (asserts! pool-does-not-exist (err u200))
 
         ;;check that the token ordering is correct
