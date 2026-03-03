@@ -134,8 +134,8 @@
 (define-private (correct-token-ordering (token-0 principal) (token-1 principal)) 
     
     (let (
-        (token-0-buff (unwrap-panic (to-consensus-buff? token-0)))
-        (token-1-buff (unwrap-panic (to-consensus-buff? token-1)))
+        (token-0-buff (unwrap-panic (to-consensus-buff? token-0))) ;;converts token-0 from principal to buffer
+        (token-1-buff (unwrap-panic (to-consensus-buff? token-1))) ;;converts token-1 from principal to buffer
     )
     (asserts! (< token-0-buff token-1-buff) (err u201))
     (ok true)
