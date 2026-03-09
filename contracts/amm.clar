@@ -116,6 +116,7 @@
 ;;
 
 ;; read only functions
+
 ;;compute the hash of token0 + token1 + fee to use as poolID
 (define-read-only (get-pool-id
     (pool-info {token-0: <ft-trait>, token-1: <ft-trait>, fee: uint}))
@@ -125,6 +126,21 @@
         (pool-id (hash160 buff));; take the hash of the raw bytes which becomes the pool-id
         )
         pool-id
+    )
+)
+
+;;get-position-liquidity function will fetch a user's presupplied liquidity to the pool if any otherwise returns 0
+(define-read-only (get-position-liquidity (pool-id (buff 20)) (owner principal))
+    (let (
+        ;;check the position from the 'positions' map
+        (position (map-get? positions {pool-id: pool-id, owner: owner}))
+
+        ;;check existing liquidity of the owner if any otherwise return 0
+        (existing-owner-liquidity (if (is-some position) (unwrap-panic position) {liquidity: u0}))
+        
+        )
+
+        (ok (get liquidity existing-owner-liquidity))
     )
 )
 ;;
