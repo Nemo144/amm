@@ -63,6 +63,7 @@
 ;;
 
 ;; public functions
+
 ;;define the create-pool function
 (define-public (create-pool (token-0 <ft-trait>) (token-1 <ft-trait>) (fee uint))
 
@@ -111,7 +112,105 @@
         ;;return ok
         (ok true)
     )
+)
 
+;;add-liquidity function for adding liquidity to a pool
+(define-public (add-liquidity (token-0 <ft-trait>) (token-1 <ft-trait>) (fee uint) (amount-0-desired uint) (amount-1-desired uint) (amount-0-min uint) (amount-1-min uint))
+
+    (let (
+            ;; define the pool-info
+            (pool-info {
+                token-0: token-0,
+                token-1: token-1,
+                fee: fee
+            })
+
+            ;;define the pool-id
+            (pool-id (get-pool-id pool-info))
+
+            ;;define pool data wrt the 'pools' map
+            (pool-data (unwrap! (map-get? pools pool-id) (err u0)))
+
+            ;;define the sender of the contract
+            (sender tx-sender)
+
+            ;;define the pool liquidity
+            (pool-liquidity (get liquidity pool-data))
+
+            ;;define the balances
+            (balance-0 (get balance-0 pool-data))
+            (balance-1 (get balance-1 pool-data))
+
+            ;;fetch the current liquidity of the user in the pool otherwise throw an error
+            (user-liquidity (unwrap! (get-position-liquidity pool-id sender) (err u0)))
+
+            ;;check if it is the first time liquidity is being added to the pool
+            (is-initial-liquidity (is-eq pool-liquidity u0))
+
+            ;;amounts logic to account for the first liquidity for the pool or otherwise
+            (amounts
+                (if
+                    is-initial-liquidity
+
+                    ;;then the amount-0-desired and amount-1-desired can be added in any measure
+                    {amount-0: amount-0-desired, amount-1: amount-1-desired}
+
+                    ;;if there is already liquidity then get-amounts is used to handle ratio constraints
+                    (unwrap! (get-amounts amount-0-desired amount-1-desired amount-0-min amount-1-min balance-0 balance-1) (err u0))
+                )
+            )
+
+            ;;define the new amounts
+            (amount-0 (get amount-0 amounts))
+            (amount-1 (get amount-1 amounts))
+
+            ;;define the new liquidity (L value)
+            (new-liquidity
+                (if
+                    is-initial-liquidity
+
+                    ;;then the L value will be calculated as L=sqrti(x*y) - MINIMUM_LIQUIDITY
+                    (- (sqrti (* amount-0 amount-1)) MINIMUM_LIQUIDITY) 
+
+                    ;;if not, it is calculated as min( amount0 * pool-liquidity / balance0 , amount1 * pool-liquidity / balance1 )
+                    (min (/ (* amount-0 pool-liquidity) balance-0) (/ (* amount-1 pool-liquidity) balance-1))
+                )
+            )
+
+            ;;define the new-pool-liquidity
+            (new-pool-liquidity
+                (if
+                    is-initial-liquidity
+
+                    ;;then the new-pool-liquidity will be an addition of the new-liquidity and minimum_liquidity
+                    (+ new-liquidity MINIMUM_LIQUIDITY)
+                    new-liquidity 
+                )
+            )
+        )
+
+        ;;make sure that their is sufficient liquidity minted. throw an error otherwise
+        (asserts! (> new-liquidity u0) (err u202))
+
+        ;;make transfers from the user to the pool for both tokens
+        (try! (contract-call? token-0 transfer amount-0 sender THIS_CONTRACT none))
+        (try! (contract-call? token-1 transfer amount-1 sender THIS_CONTRACT none))
+
+        ;;update the 'position' maps for the owner, pool-id liquidity(user-liquidity + new liquidity)
+        (map-set positions {pool-id: pool-id, owner: sender} {liquidity: (+ user-liquidity new-liquidity)})
+
+        ;;update the 'pools' map for the liquidity(pool-liquidity + new-pool-liquidity), balance-0, balance-1
+        (map-set pools pool-id (merge pool-data {
+            liquidity: (+ pool-liquidity new-pool-liquidity),
+            balance-0: (+ balance-0 amount-0),
+            balance-1: (+ balance-1 amount-1)
+        }))
+
+        ;;print the action-data
+        (print {action-data: "add-liquidity", pool-id: pool-id, amount-0: amount-0, amount-1: amount-1, liquidity: (+ user-liquidity new-liquidity)})
+
+        (ok true)
+    )
 )
 ;;
 
@@ -197,6 +296,11 @@
             )
         )
     )
+)
+
+;;min helper function for the add-liquidity public function
+(define-private (min (a uint) (b uint)) 
+    (if (< a b) a b)
 )
 ;;
 
