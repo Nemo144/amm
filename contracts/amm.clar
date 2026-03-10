@@ -146,6 +146,7 @@
 ;;
 
 ;; private functions
+
 ;;helper fnc to ensure that the token0 principal address is less than the token1 principal
 (define-private (correct-token-ordering (token-0 principal) (token-1 principal)) 
     
@@ -155,6 +156,46 @@
     )
     (asserts! (< token-0-buff token-1-buff) (err u201))
     (ok true)
+    )
+)
+
+;;get-amounts function calculates how much of each tokens will be added as liquidity within the specified constraints
+(define-private (get-amounts (amount-0-desired uint) (amount-1-desired uint) (amount-0-min uint) (amount-1-min uint) (balance-0 uint) (balance-1 uint)) 
+    
+    (let (
+        ;;calculate the ideal amount of token-1 to be provided that evens out the ratio of the pool with respect to the `amount-0-desired`
+        (amount-1-given-0 (/ (* amount-0-desired balance-1) balance-0))
+
+        ;;calculate the ideal amount of token-0 to be provided that evens out the ratio of the pool with respect to the `amount-1-desired`
+        (amount-0-given-1 (/ (* amount-1-desired balance-0) balance-1))
+        )
+
+        (if
+            ;;if ideal amount-1 is less than amount-1 desired
+            (<= amount-1-given-0 amount-1-desired)
+            (begin 
+
+            ;;make sure the ideal amount-1 is greater or equal to amount-1-minimum otherwise throw an error
+            (asserts! (>= amount-1-given-0 amount-1-min) (err u207))
+
+            ;;amount-0-desired and ideal amount-1 can be added to the pool
+            (ok {amount-0: amount-0-desired, amount-1: amount-1-given-0})
+            )
+
+            ;;else if the ideal amount-1 is greater than the desired amount-1, we can only add up to 'amount-1-desired' to the pool
+
+            (begin
+
+            ;;make sure the ideal amount-0 is less than the desired amount-0 otherwise throw an error
+            (asserts! (<= amount-0-given-1 amount-0-desired) (err u208)) 
+
+            ;;make sure the ideal amount-0 >= the amount-0-minimum
+            (asserts! (>= amount-0-given-1 amount-0-min) (err u208))
+
+            ;;add the ideal amount-0 and amount-1-desired to the pool
+            (ok {amount-0: amount-0-given-1, amount-1: amount-1-desired})
+            )
+        )
     )
 )
 ;;
