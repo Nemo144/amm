@@ -253,13 +253,13 @@
         (asserts! (>= user-liquidity liquidity) (err u203))
 
         ;;make sure the user receives some amounts of each token
-        (asserts! (> amount-0 u0) (err u202))
-        (asserts! (> amount-1 u0) (err u202))
+        (asserts! (> amount-0 u0) (err u204))
+        (asserts! (> amount-1 u0) (err u204))
         
         ;;make transfers from the pool to the user
         (try! (as-contract (contract-call? token-0 transfer amount-0 THIS_CONTRACT sender none)))
         (try! (as-contract (contract-call? token-1 transfer amount-1 THIS_CONTRACT sender none)))
-        
+
         ;;update the 'positions' map
         (map-set positions {pool-id: pool-id, owner: sender} {liquidity: (- user-liquidity liquidity)})
 
