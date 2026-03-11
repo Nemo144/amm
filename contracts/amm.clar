@@ -212,6 +212,71 @@
         (ok true)
     )
 )
+
+;;remove-liquidity function for removing liquidity
+(define-public (remove-liquidity (token-0 <ft-trait>) (token-1 <ft-trait>) (fee uint) (liquidity uint))
+    
+    (let (
+            ;;define the pool-info
+            (pool-info {
+                token-0: token-0,
+                token-1: token-1,
+                fee: fee
+            })
+
+            ;;define the pool-id
+            (pool-id (get-pool-id pool-info))
+
+            ;;define the pool-data 
+            (pool-data (unwrap! (map-get? pools pool-id) (err u0)))
+
+            ;;define the sender 
+            (sender tx-sender)
+
+            ;;define the pool-liquidity
+            (pool-liquidity (get liquidity pool-data))
+
+            ;;define the balances
+            (balance-0 (get balance-0 pool-data))
+            (balance-1 (get balance-1 pool-data))
+
+            ;;define the user-liquidity 
+            (user-liquidity (unwrap! (get-position-liquidity pool-id sender) (err u0)))
+
+            ;;calculate the % of total pool-liquidity the user will get wrt to each tokens
+            (amount-0 (/ (* liquidity balance-0) pool-liquidity))
+            (amount-1 (/ (* liquidity balance-1) pool-liquidity))
+            
+        )
+
+        ;;make sure the user owns enough liquidity to withdraw
+        (asserts! (>= user-liquidity liquidity) (err u203))
+
+        ;;make sure the user receives some amounts of each token
+        (asserts! (> amount-0 u0) (err u202))
+        (asserts! (> amount-1 u0) (err u202))
+        
+        ;;make transfers from the pool to the user
+        (try! (as-contract (contract-call? token-0 transfer amount-0 THIS_CONTRACT sender none)))
+        (try! (as-contract (contract-call? token-1 transfer amount-1 THIS_CONTRACT sender none)))
+        
+        ;;update the 'positions' map
+        (map-set positions {pool-id: pool-id, owner: sender} {liquidity: (- user-liquidity liquidity)})
+
+        ;;update the 'pools' map
+        (map-set pools pool-id (merge pool-data {
+            liquidity: (- pool-liquidity liquidity),
+            balance-0: (- balance-0 amount-0),
+            balance-1: (- balance-1 amount-1)
+        }))
+
+        ;;print the action data...
+        (print {action-data: "remove-liquidity", pool-id: pool-id, amount-0: amount-0, amount-1: amount-1, liquidity: liquidity})
+
+        (ok true)
+    )
+
+)
 ;;
 
 ;; read only functions
