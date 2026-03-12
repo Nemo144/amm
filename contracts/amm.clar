@@ -389,6 +389,19 @@
         (ok (get liquidity existing-owner-liquidity))
     )
 )
+
+;;get-pool-data helper function to get the state of a pool offchain
+(define-read-only (get-pool-data (pool-id (buff 20))) 
+
+    (let (
+
+        ;;define the pool-data
+        (pool-data (map-get? pools pool-id))
+        )
+
+        (ok pool-data)
+    )
+)
 ;;
 
 ;; private functions
