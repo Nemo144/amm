@@ -277,6 +277,88 @@
     )
 
 )
+
+;;define the swap function for swapping token pairs in the pool
+(define-public (swap (token-0 <ft-trait>) (token-1 <ft-trait>) (fee uint) (input-amount uint) (zero-for-one bool))
+    
+    (let (
+
+            ;;define the pool-info
+            (pool-info {
+                token-0: token-0,
+                token-1: token-1,
+                fee: fee
+            })
+
+            ;;define the pool-id
+            (pool-id (get-pool-id pool-info))
+
+            ;;define the pool-data
+            (pool-data (unwrap! (map-get? pools pool-id) (err u0)))
+
+            ;;define the sender
+            (sender tx-sender)
+
+            ;;define the pool-liquidity
+            (pool-liquidity (get liquidity pool-data))
+
+            ;;define the balances of the token 
+            (balance-0 (get balance-0 pool-data))
+            (balance-1 (get balance-1 pool-data))
+
+            ;;calculate xy=k (solving for the constant)
+            (K (* balance-0 balance-1))
+
+            ;;keep track of the input and output tokens
+            (input-token (if zero-for-one token-0 token-1))
+            (output-token (if zero-for-one token-1 token-0))
+
+            ;;keep track of the balances too
+            (input-balance (if zero-for-one balance-0 balance-1))
+            (output-balance (if zero-for-one balance-1 balance-0))
+
+            ;;calculate the output-amount
+            (output-amount (- output-balance (/ K (+ input-amount input-balance))))
+
+            ;;calculate the fees
+            (fees (/ (* output-amount fee) FEES_DENOM))
+
+            ;;subtract the fees from the output-amount
+            (output-amount-sub-fees (- output-amount fees))
+
+            ;;calculate the balances post swap
+            (balance-0-post-swap (if zero-for-one (+ balance-0 input-amount) (- balance-0 output-amount-sub-fees)))
+            (balance-1-post-swap (if zero-for-one (- balance-1 output-amount-sub-fees) (+ balance-1 input-amount)))
+
+        )
+
+        ;;make sure the user has tokens for the swap
+        (asserts! (> input-amount u0) (err u205))
+
+        ;;make sure the user is getting some tokens from the pool
+        (asserts! (> output-amount-sub-fees u0) (err u206))
+
+        ;;make sure the pool has enough output tokens to give the user 
+        (asserts! (< output-amount-sub-fees output-balance) (err u206))
+
+        ;;transfer the token from the user to the pool
+        (try! (contract-call? input-token transfer input-amount sender THIS_CONTRACT none))
+
+        ;;transfer the token from the pool to the user 
+        (try! (as-contract (contract-call? output-token transfer output-amount-sub-fees THIS_CONTRACT sender none)))
+
+        ;;update the pools map
+        (map-set pools pool-id (merge pool-data {
+            balance-0: balance-0-post-swap,
+            balance-1: balance-1-post-swap,
+        }))
+
+        ;;print
+        (print {action: "swap", pool-id: pool-id, input-amount: input-amount})
+
+        (ok true)
+    )
+)
 ;;
 
 ;; read only functions
