@@ -213,7 +213,7 @@
     )
 )
 
-;;remove-liquidity function for removing liquidity
+;;remove-liquidity function for removing tokens from the pool
 (define-public (remove-liquidity (token-0 <ft-trait>) (token-1 <ft-trait>) (fee uint) (liquidity uint))
     
     (let (
