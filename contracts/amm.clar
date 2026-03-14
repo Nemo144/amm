@@ -413,7 +413,7 @@
         (token-0-buff (unwrap-panic (to-consensus-buff? token-0))) ;;converts token-0 from principal to buffer
         (token-1-buff (unwrap-panic (to-consensus-buff? token-1))) ;;converts token-1 from principal to buffer
     )
-    (asserts! (< token-0-buff token-1-buff) (err u201))
+    (asserts! (< token-0-buff token-1-buff) ERR_INCORRECT_TOKEN_ORDERING)
     (ok true)
     )
 )
@@ -435,7 +435,7 @@
             (begin 
 
             ;;make sure the ideal amount-1 is greater or equal to amount-1-minimum otherwise throw an error
-            (asserts! (>= amount-1-given-0 amount-1-min) (err u207))
+            (asserts! (>= amount-1-given-0 amount-1-min) ERR_INSUFFICIENT_1_AMOUNT)
 
             ;;amount-0-desired and ideal amount-1 can be added to the pool
             (ok {amount-0: amount-0-desired, amount-1: amount-1-given-0})
@@ -446,10 +446,10 @@
             (begin
 
             ;;make sure the ideal amount-0 is less than the desired amount-0 otherwise throw an error
-            (asserts! (<= amount-0-given-1 amount-0-desired) (err u208)) 
+            (asserts! (<= amount-0-given-1 amount-0-desired) ERR_INSUFFICIENT_0_AMOUNT) 
 
             ;;make sure the ideal amount-0 >= the amount-0-minimum
-            (asserts! (>= amount-0-given-1 amount-0-min) (err u208))
+            (asserts! (>= amount-0-given-1 amount-0-min) ERR_INSUFFICIENT_0_AMOUNT)
 
             ;;add the ideal amount-0 and amount-1-desired to the pool
             (ok {amount-0: amount-0-given-1, amount-1: amount-1-desired})
