@@ -98,10 +98,10 @@
         )
         
         ;;check that the pool does not exist
-        (asserts! pool-does-not-exist (err u200))
+        (asserts! pool-does-not-exist ERR_POOL_ALREADY_EXISTS)
 
         ;;check that the token ordering is correct
-        (asserts! (is-ok (correct-token-ordering token-0-principal token-1-principal)) (err u201))
+        (asserts! (is-ok (correct-token-ordering token-0-principal token-1-principal)) ERR_INCORRECT_TOKEN_ORDERING)
 
         ;;update the pools mapping
         (map-set pools pool-id pool-data)
@@ -190,7 +190,7 @@
         )
 
         ;;make sure that their is sufficient liquidity minted. throw an error otherwise
-        (asserts! (> new-liquidity u0) (err u202))
+        (asserts! (> new-liquidity u0) ERR_INSUFFICIENT_LIQUIDITY_MINTED)
 
         ;;make transfers from the user to the pool for both tokens
         (try! (contract-call? token-0 transfer amount-0 sender THIS_CONTRACT none))
@@ -250,7 +250,7 @@
         )
 
         ;;make sure the user owns enough liquidity to withdraw
-        (asserts! (>= user-liquidity liquidity) (err u203))
+        (asserts! (>= user-liquidity liquidity) ERR_INSUFFICIENT_LIQUIDITY_OWNED)
 
         ;;make sure the user receives some amounts of each token
         (asserts! (> amount-0 u0) (err u204))
