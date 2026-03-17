@@ -371,7 +371,7 @@
         (buff (unwrap-panic (to-consensus-buff? pool-info)));;convert the tuple => pool-info into a buffer(raw bytes)
         (pool-id (hash160 buff));; take the hash of the raw bytes which becomes the pool-id
         )
-        pool-id
+        pool-id ;;return pool-id
     )
 )
 
