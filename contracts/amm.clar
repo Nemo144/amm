@@ -253,8 +253,8 @@
         (asserts! (>= user-liquidity liquidity) ERR_INSUFFICIENT_LIQUIDITY_OWNED)
 
         ;;make sure the user receives some amounts of each token
-        (asserts! (> amount-0 u0) (err u204))
-        (asserts! (> amount-1 u0) (err u204))
+        (asserts! (> amount-0 u0) ERR_INSUFFICIENT_LIQUIDITY_BURNED)
+        (asserts! (> amount-1 u0) ERR_INSUFFICIENT_LIQUIDITY_BURNED)
         
         ;;make transfers from the pool to the user
         (try! (as-contract (contract-call? token-0 transfer amount-0 THIS_CONTRACT sender none)))
