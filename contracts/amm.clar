@@ -333,13 +333,13 @@
         )
 
         ;;make sure the user has tokens for the swap
-        (asserts! (> input-amount u0) (err u205))
+        (asserts! (> input-amount u0) ERR_INSUFFICIENT_INPUT_AMOUNT)
 
         ;;make sure the user is getting some tokens from the pool
-        (asserts! (> output-amount-sub-fees u0) (err u206))
+        (asserts! (> output-amount-sub-fees u0) ERR_INSUFFICIENT_LIQUIDITY_FOR_SWAP)
 
         ;;make sure the pool has enough output tokens to give the user 
-        (asserts! (< output-amount-sub-fees output-balance) (err u206))
+        (asserts! (< output-amount-sub-fees output-balance) ERR_INSUFFICIENT_LIQUIDITY_FOR_SWAP)
 
         ;;transfer the token from the user to the pool
         (try! (contract-call? input-token transfer input-amount sender THIS_CONTRACT none))
