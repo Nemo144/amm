@@ -34,7 +34,7 @@
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
     (begin
         ;;assert that the contract-owner is the sender
-        (asserts! (is-eq tx-sender sender) (err u101))
+        (asserts! (is-eq tx-sender sender) err-not-token-owner)
 
         ;;transfer mock-token from the sender to the principal
         (try! (ft-transfer? mock-token amount sender recipient))
