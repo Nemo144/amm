@@ -32,6 +32,7 @@ type ContractEvent = {
   };
 };
 
+//PoolCV is a struct type, represents the clarity value version of the tuple gotten from the `pools` map in the clarity smart contract
 type PoolCV = {
   "token-0": PrincipalCV;
   "token-1": PrincipalCV;
@@ -41,6 +42,7 @@ type PoolCV = {
   "balance-1": UIntCV;
 };
 
+//standard typescript type for use across the frontend
 export type Pool = {
   id: string;
   "token-0": string;
