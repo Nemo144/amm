@@ -154,6 +154,6 @@ export async function getAllPools() {
       //update the offset
       offset = event.event_index;
     }
-    return pools;
   }
+  return pools;
 }
