@@ -11,6 +11,7 @@ import {
   uintCV,
   UIntCV,
 } from "@stacks/transactions";
+import { uint } from "@stacks/transactions/dist/cl";
 import { buffer } from "stream/consumers";
 
 //define the contract address, name and principal
@@ -177,4 +178,108 @@ export async function createPool(token0: string, token1: string, fee: number) {
     functionArgs: [principalCV(token0), principalCV(token1), uintCV(fee)],
   };
   return txOptions;
+}
+
+//addLiquidity function for the transaction to the contract
+export async function addLiquidity(
+  pool: Pool,
+  amount0: number,
+  amount1: number,
+) {
+  //check for the liquidity of both amounts
+  if (amount0 === 0 || amount1 === 1) {
+    throw new Error("cannot add liquidity with 0 amount");
+  }
+
+  //if it is not initial liquidity, then the amounts are added in ratio of the price
+  if (pool.liquidity > 0) {
+    //define the poolRatio
+    const poolRatio = pool["balance-0"] / pool["balance-1"];
+
+    //define the idealAmount1
+    const idealAmount1 = Math.floor(amount0 / poolRatio);
+
+    //check that the amount1 is greater than the idealAmount1 otherwise throw an error
+    if (amount1 < idealAmount1) {
+      throw new Error(
+        `Cannot add liquidity in these amounts. You need to supply at least ${idealAmount1} ${
+          pool["token-1"].split(".")[1]
+        } along with ${amount0} ${pool["token-0"].split(".")[1]}`,
+      );
+    }
+  }
+
+  //define the txOptions for the addLiquidity function
+  const txOptions = {
+    contractAddress: AMM_CONTRACT_ADDRESS,
+    contractName: AMM_CONTRACT_NAME,
+    functionName: "add-liquidity",
+    functionArgs: [
+      principalCV(pool["token-0"]),
+      principalCV(pool["token-1"]),
+      uintCV(pool.fee),
+      uintCV(amount0),
+      uintCV(amount1),
+      uintCV(0),
+      uintCV(0),
+    ],
+  };
+  return txOptions;
+}
+
+//removeLiquidity function for the transaction to the contract
+export async function removeLiquidity(pool: Pool, liquidity: number) {
+  //define the txOptions for the removeLiquidity function
+  const txOptions = {
+    contractAddress: AMM_CONTRACT_ADDRESS,
+    contractName: AMM_CONTRACT_NAME,
+    functionName: "remove-liquidity",
+    functionArgs: [
+      principalCV(pool["token-0"]),
+      principalCV(pool["token-1"]),
+      uintCV(pool.fee),
+      uintCV(liquidity),
+    ],
+  };
+  return txOptions;
+}
+
+//swap function for the transactions to the contract
+export async function swap(pool: Pool, amount: number, zeroForOne: boolean) {
+  //define the txOptions for the swap function
+  const txOptions = {
+    contractAddress: AMM_CONTRACT_ADDRESS,
+    contractName: AMM_CONTRACT_NAME,
+    functionName: "swap",
+    functionArgs: [
+      principalCV(pool["token-0"]),
+      principalCV(pool["token-1"]),
+      uintCV(pool.fee),
+      uintCV(amount),
+      boolCV(zeroForOne),
+    ],
+  };
+  return txOptions;
+}
+
+//getUserLiquidity function for the transactions to the contract
+export async function getUserLiquidity(pool: Pool, user: string) {
+  //define the userLiquidity result
+  const userLiquidityResult = await fetchCallReadOnlyFunction({
+    contractAddress: AMM_CONTRACT_ADDRESS,
+    contractName: AMM_CONTRACT_NAME,
+    functionName: "get-position-liquidity",
+    functionArgs: [bufferCV(Buffer.from(pool.id, "hex")), principalCV(user)],
+    senderAddress: AMM_CONTRACT_ADDRESS,
+    network: STACKS_TESTNET,
+  });
+  if (userLiquidityResult.type !== "ok") {
+    return 0;
+  }
+
+  if (userLiquidityResult.value.type !== "uint") {
+    return 0;
+  }
+
+  return parseInt(userLiquidityResult.value.value.toString());
 }
