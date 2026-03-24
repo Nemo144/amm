@@ -157,3 +157,24 @@ export async function getAllPools() {
   }
   return pools;
 }
+
+//createPool function for the transaction to the contract
+export async function createPool(token0: string, token1: string, fee: number) {
+  //convert the tokens to hex
+  const token0Hex = cvToHex(principalCV(token0));
+  const token1Hex = cvToHex(principalCV(token1));
+
+  //sort the order of the tokens
+  if (token0Hex > token1Hex) {
+    [token0, token1] = [token1, token0];
+  }
+
+  //define the txOptions
+  const txOptions = {
+    contractAddress: AMM_CONTRACT_ADDRESS,
+    contractName: AMM_CONTRACT_NAME,
+    functionName: "create-pool",
+    functionArgs: [principalCV(token0), principalCV(token1), uintCV(fee)],
+  };
+  return txOptions;
+}
