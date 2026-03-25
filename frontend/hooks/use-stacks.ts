@@ -75,4 +75,110 @@ export function useStacks() {
       return;
     }
   }
+
+  //define the handleSwap function
+  async function handleSwap(pool: Pool, amount: number, zeroForOne: boolean) {
+    try {
+      //check if the user is connected otherwise throw an error
+      if (!userData) throw new Error("user not connected");
+
+      //define the options variable for the swap function
+      const options = await swap(pool, amount, zeroForOne);
+
+      //define the OpenContractCall function
+      await openContractCall({
+        ...options,
+        appDetails,
+        onFinish: (data) => {
+          window.alert("sent swap transaction");
+          console.log(data);
+        },
+        postConditionMode: PostConditionMode.Allow,
+      });
+    } catch (_err) {
+      const err = _err as Error;
+      console.log(err);
+      window.alert(err.message);
+      return;
+    }
+  }
+
+  //define the handleAddLiquidity function
+  async function handleAddALiquidity(
+    pool: Pool,
+    amount0: number,
+    amount1: number,
+  ) {
+    try {
+      //check if user is connected otherwise throw an error
+      if (!userData) throw new Error("user not connected");
+
+      //define the options variable for the addLiquidity function
+      const options = await addLiquidity(pool, amount0, amount1);
+
+      //define the OpenContractCall function
+      await openContractCall({
+        ...options,
+        appDetails,
+        onFinish: (data) => {
+          window.alert("sent the add liquidity transaction");
+          console.log({ data });
+        },
+        postConditionMode: PostConditionMode.Allow,
+      });
+    } catch (_err) {
+      const err = _err as Error;
+      console.log(err);
+      window.alert(err.message);
+      return;
+    }
+  }
+
+  //define the function for the handleRemoveLiquidity function
+  async function handleRemoveLiquidity(pool: Pool, liquidity: number) {
+    try {
+      //check if user is connected otherwise throw an error
+      if (!userData) throw new Error("user not connected");
+
+      //define the options variable for the removeliquidity function
+      const options = await removeLiquidity(pool, liquidity);
+
+      //define the OpenContractCall function
+      await openContractCall({
+        ...options,
+        appDetails,
+        onFinish: (data) => {
+          window.alert("sent remove liquidity transaction");
+          console.log(data);
+        },
+      });
+    } catch (_err) {
+      const err = _err as Error;
+      console.log(err);
+      window.alert(err.message);
+      return;
+    }
+  }
+
+  //define the effect hook to handle the side effects of the userSessions
+  useEffect(() => {
+    //check if user is signed in and update the userData
+    if (userSession.isSignInPending()) {
+      userSession.handlePendingSignIn().then((userData) => {
+        setUserData(userData);
+      });
+    } else if (userSession.isUserSignedIn()) {
+      setUserData(userSession.loadUserData());
+    }
+  }, []);
+
+  return {
+    connectWallet,
+    disconnectWallet,
+    userData,
+    handleCreatePool,
+    handleAddALiquidity,
+    handleSwap,
+    handleRemoveLiquidity,
+  };
 }
