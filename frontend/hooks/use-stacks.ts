@@ -104,7 +104,7 @@ export function useStacks() {
   }
 
   //define the handleAddLiquidity function
-  async function handleAddALiquidity(
+  async function handleAddLiquidity(
     pool: Pool,
     amount0: number,
     amount1: number,
@@ -177,7 +177,7 @@ export function useStacks() {
     disconnectWallet,
     userData,
     handleCreatePool,
-    handleAddALiquidity,
+    handleAddLiquidity,
     handleSwap,
     handleRemoveLiquidity,
   };
