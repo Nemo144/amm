@@ -3,10 +3,11 @@
 import { useStacks } from "@/hooks/use-stacks";
 import { abbreviateAddress } from "@/lib/stx-utils";
 import Link from "next/link";
+import { useStacksContext } from "@/context/stacks-context";
 
 export const Navbar = () => {
   //define the useStacks contexts for use in the navbar component
-  const { userData, connectWallet, disconnectWallet } = useStacks();
+  const { userData, connectWallet, disconnectWallet } = useStacksContext();
 
   return (
     <nav className="flex w-full items-center justify-between gap-4 p-4 h-16 border-b border-gray-500">

@@ -3,6 +3,7 @@
 import { useStacks } from "@/hooks/use-stacks";
 import { Pool } from "@/lib/amm";
 import { useState } from "react";
+import { useStacksContext } from "@/context/stacks-context";
 
 export interface AddLiquidityProps {
   pools: Pool[];
@@ -17,7 +18,7 @@ export const AddLiquidity = ({ pools }: AddLiquidityProps) => {
   const [amount1, setAmount1] = useState<number>(1);
 
   //define the useStacks contexts for use in the addLiquidity component
-  const { handleAddLiquidity } = useStacks();
+  const { handleAddLiquidity } = useStacksContext();
 
   return (
     <div className="flex flex-col max-w-md w-full gap-4 p-6 border border-gray-500 rounded-md">

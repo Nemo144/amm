@@ -18,6 +18,7 @@ import {
 
 import { PostConditionMode } from "@stacks/transactions";
 import { useState, useEffect } from "react";
+import { STACKS_TESTNET } from "@stacks/network";
 
 //define the app details
 const appDetails = {
@@ -57,13 +58,17 @@ export function useStacks() {
     try {
       //check if the user is connected otherwise throw an error
       if (!userData) throw new Error("user not connected");
+      console.log("userData ok, calling createPool...");
 
       //define the options variable for the createPool function
       const options = await createPool(token0, token1, fee);
+      console.log("options:", options);
 
       //define the OpenContractCall function
+      console.log("calling openContractCall...");
       await openContractCall({
         ...options,
+        network: STACKS_TESTNET,
         appDetails,
         onFinish: (data) => {
           window.alert("sent create Pool transaction");
@@ -73,7 +78,7 @@ export function useStacks() {
       });
     } catch (_err) {
       const err = _err as Error;
-      console.log(err);
+      console.log("Error:", err);
       window.alert(err.message);
       return;
     }
@@ -91,10 +96,14 @@ export function useStacks() {
       //define the OpenContractCall function
       await openContractCall({
         ...options,
+        network: STACKS_TESTNET,
         appDetails,
         onFinish: (data) => {
           window.alert("sent swap transaction");
           console.log(data);
+        },
+        onCancel: () => {
+          console.log("user cancelled");
         },
         postConditionMode: PostConditionMode.Allow,
       });
@@ -122,6 +131,7 @@ export function useStacks() {
       //define the OpenContractCall function
       await openContractCall({
         ...options,
+        network: STACKS_TESTNET,
         appDetails,
         onFinish: (data) => {
           window.alert("sent the add liquidity transaction");
@@ -149,6 +159,7 @@ export function useStacks() {
       //define the OpenContractCall function
       await openContractCall({
         ...options,
+        network: STACKS_TESTNET,
         appDetails,
         onFinish: (data) => {
           window.alert("sent remove liquidity transaction");

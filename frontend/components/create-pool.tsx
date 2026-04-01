@@ -2,10 +2,11 @@
 
 import { useStacks } from "@/hooks/use-stacks";
 import { useState } from "react";
+import { useStacksContext } from "@/context/stacks-context";
 
 export const CreatePool = () => {
   //define the useStacks contexts for use in the createPool component
-  const { handleCreatePool } = useStacks();
+  const { handleCreatePool } = useStacksContext();
 
   //define the state for the tokens and fees
   const [token0, setToken0] = useState("");
@@ -50,9 +51,7 @@ export const CreatePool = () => {
       </div>
 
       <button
-        onClick={async () => {
-          console.log("clicked", { token0, token1, fee });
-        }}
+        onClick={() => handleCreatePool(token0, token1, fee)}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
       >
         Create Pool

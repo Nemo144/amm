@@ -3,6 +3,7 @@
 import { useStacks } from "@/hooks/use-stacks";
 import { Pool } from "@/lib/amm";
 import { useEffect, useState, useMemo } from "react";
+import { useStacksContext } from "@/context/stacks-context";
 
 export interface SwapProps {
   pools: Pool[];
@@ -10,7 +11,7 @@ export interface SwapProps {
 
 export const Swap = ({ pools }: SwapProps) => {
   //define the useStacks contexts for use in the swap component
-  const { handleSwap } = useStacks();
+  const { handleSwap } = useStacksContext();
 
   //define the state management for the fromToken, toToken, fromAmount, estimatedToAmount
   const [fromToken, setFromToken] = useState<string>(pools[0]["token-0"]);

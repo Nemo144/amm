@@ -3,6 +3,7 @@
 import { useStacks } from "@/hooks/use-stacks";
 import { getUserLiquidity, Pool } from "@/lib/amm";
 import { useState, useEffect } from "react";
+import { useStacksContext } from "@/context/stacks-context";
 
 export interface RemoveLiquidityProps {
   pools: Pool[];
@@ -10,7 +11,7 @@ export interface RemoveLiquidityProps {
 
 export const RemoveLiquidity = ({ pools }: RemoveLiquidityProps) => {
   //define the useStacks contexts for use in the removeLiquidity component
-  const { userData, handleRemoveLiquidity } = useStacks();
+  const { userData, handleRemoveLiquidity } = useStacksContext();
 
   //define the state for the selected pool
   const [selectedPool, setSelectedPool] = useState<Pool>(pools[0]);
