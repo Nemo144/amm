@@ -11,13 +11,11 @@ import {
   uintCV,
   UIntCV,
 } from "@stacks/transactions";
-import { uint } from "@stacks/transactions/dist/cl";
-import { buffer } from "stream/consumers";
 
 //define the contract address, name and principal
 const AMM_CONTRACT_ADDRESS = "ST3PEN3P9CDM5HNDW4VKRWY5T456AK990AZRKA5E";
 const AMM_CONTRACT_NAME = "amm";
-const AMM_CONTRACT_PRINCIPAL = `$(AMM_CONTRACT_ADDRESS).$(AMM_CONTRACT_NAME)`;
+const AMM_CONTRACT_PRINCIPAL = `${AMM_CONTRACT_ADDRESS}.${AMM_CONTRACT_NAME}`;
 
 //define the contract events type
 type ContractEvent = {

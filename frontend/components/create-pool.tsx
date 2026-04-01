@@ -19,7 +19,7 @@ export const CreatePool = () => {
         <span className="font-bold">Token 0</span>
         <input
           type="text"
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           placeholder="Token 0"
           value={token0}
           onChange={(e) => setToken0(e.target.value)}
@@ -30,7 +30,7 @@ export const CreatePool = () => {
         <span className="font-bold">Token 1</span>
         <input
           type="text"
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           placeholder="Token 1"
           value={token1}
           onChange={(e) => setToken1(e.target.value)}
@@ -40,7 +40,7 @@ export const CreatePool = () => {
         <span className="font-bold">Fee</span>
         <input
           type="number"
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           placeholder="Fee"
           max={10_000}
           min={0}
@@ -50,8 +50,10 @@ export const CreatePool = () => {
       </div>
 
       <button
-        onClick={() => handleCreatePool(token0, token1, fee)}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={async () => {
+          console.log("clicked", { token0, token1, fee });
+        }}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
       >
         Create Pool
       </button>

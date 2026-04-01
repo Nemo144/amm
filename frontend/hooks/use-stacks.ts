@@ -1,3 +1,5 @@
+"use client";
+
 import {
   addLiquidity,
   createPool,
@@ -51,6 +53,7 @@ export function useStacks() {
 
   //define the handleCreatePool function
   async function handleCreatePool(token0: string, token1: string, fee: number) {
+    console.log("handleCreatePool called", { token0, token1, fee });
     try {
       //check if the user is connected otherwise throw an error
       if (!userData) throw new Error("user not connected");
