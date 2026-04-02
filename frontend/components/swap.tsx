@@ -117,7 +117,7 @@ export const Swap = ({ pools }: SwapProps) => {
       <div className="flex flex-col gap-1">
         <span className="font-bold">From</span>
         <select
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           value={fromToken}
           onChange={(e) => setFromToken(e.target.value)}
         >
@@ -129,7 +129,7 @@ export const Swap = ({ pools }: SwapProps) => {
         </select>
         <input
           type="number"
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           placeholder="Amount"
           value={fromAmount}
           onChange={(e) => setFromAmount(parseInt(e.target.value))}
@@ -138,7 +138,7 @@ export const Swap = ({ pools }: SwapProps) => {
       <div className="flex flex-col gap-1">
         <span className="font-bold">To</span>
         <select
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           value={toToken}
           onChange={(e) => setToToken(e.target.value)}
         >

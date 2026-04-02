@@ -46,7 +46,7 @@ export const RemoveLiquidity = ({ pools }: RemoveLiquidityProps) => {
       <div className="flex flex-col gap-1">
         <span className="font-bold">Pool ID</span>
         <select
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           onChange={(e) => {
             const poolId = e.target.value;
             setSelectedPool(pools.find((pool) => pool.id === poolId)!);
@@ -66,7 +66,7 @@ export const RemoveLiquidity = ({ pools }: RemoveLiquidityProps) => {
         </div>
         <input
           type="text"
-          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-black"
+          className="border-2 border-gray-500 rounded-lg px-4 py-2 text-white"
           value={liquidity}
           onChange={(e) => setLiquidity(parseInt(e.target.value))}
         />
